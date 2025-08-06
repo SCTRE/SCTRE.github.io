@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>媒体播放器</title>
+  <title>视频播放器</title>
   <style>
     * {
       margin: 0;
@@ -27,6 +27,7 @@
       font-size: 1.5rem;
       margin-bottom: 20px;
       color: #222;
+      text-align: center;
     }
 
     .player-container {
@@ -38,7 +39,7 @@
       max-width: 600px;
     }
 
-    video, audio {
+    video {
       width: 100%;
       border-radius: 12px;
       outline: none;
@@ -54,24 +55,14 @@
 </head>
 <body>
 
-  <h1>欢迎观看/收听</h1>
+  <h1>精彩视频，尽在此刻</h1>
 
   <div class="player-container">
-    <!-- 替换为你的媒体链接 -->
-    <video controls poster="封面图片链接.jpg">
-      <source src="你的视频链接.mp4" type="video/mp4" />
+    <video controls poster="https://dummyimage.com/600x340/cccccc/ffffff&text=Loading...">
+      <source src="media/video.mp4" type="video/mp4" />
       您的浏览器不支持 video 标签。
     </video>
-
-    <!-- 或者你用 audio，放下面 -->
-    <!--
-    <audio controls>
-      <source src="你的音频链接.mp3" type="audio/mpeg" />
-      您的浏览器不支持 audio 标签。
-    </audio>
-    -->
-
-    <div class="note">点击播放按钮开始体验</div>
+    <div class="note">点击播放，享受时光</div>
   </div>
 
 </body>
