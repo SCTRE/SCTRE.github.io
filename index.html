@@ -3,125 +3,133 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>美味汉堡</title>
+  <title>超写实汉堡展示</title>
   <style>
     body {
       margin: 0;
       padding: 0;
-      background: linear-gradient(to bottom, #ffe8c2, #f4b183);
+      background: radial-gradient(circle, #fff4e1, #ffd39f);
       font-family: 'Segoe UI', sans-serif;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
       height: 100vh;
       overflow: hidden;
     }
 
-    .container {
-      text-align: center;
-      animation: fadeIn 2s ease-in-out;
-    }
-
     h1 {
+      color: #6b2e00;
       font-size: 3em;
-      color: #8b4513;
-      margin-bottom: 10px;
-      text-shadow: 2px 2px #fff3e0;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px #fff;
     }
 
-    .burger {
+    .burger-stack {
       position: relative;
-      display: inline-block;
-      width: 250px;
-      margin: 0 auto;
+      width: 300px;
+      height: 420px;
+      cursor: pointer;
     }
 
-    .layer {
-      width: 100%;
-      border-radius: 20px;
-      margin: 4px 0;
-      transition: transform 0.3s ease;
+    .burger-stack img {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%) scale(0);
+      width: 300px;
+      transition: transform 0.4s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
 
-    .bun-top {
-      background: #d2691e;
-      height: 50px;
-      border-radius: 60% 60% 30% 30%;
-      box-shadow: inset 0 3px #fff3e0;
+    .burger-stack img:hover {
+      transform: translateX(-50%) scale(1.05);
     }
 
-    .lettuce {
-      background: #7CFC00;
-      height: 20px;
-    }
+    .bun-top    { top: 0; animation: drop 0.5s 0.1s forwards; }
+    .lettuce    { top: 60px; animation: drop 0.5s 0.3s forwards; }
+    .tomato     { top: 115px; animation: drop 0.5s 0.5s forwards; }
+    .cheese     { top: 170px; animation: drop 0.5s 0.7s forwards; }
+    .patty      { top: 225px; animation: drop 0.5s 0.9s forwards; }
+    .bun-bottom { top: 290px; animation: drop 0.5s 1.1s forwards; }
 
-    .tomato {
-      background: #ff6347;
-      height: 18px;
-      border-radius: 10px;
-    }
-
-    .cheese {
-      background: #ffd700;
-      height: 12px;
-      transform: rotate(-2deg);
-    }
-
-    .patty {
-      background: #3e2723;
-      height: 25px;
-    }
-
-    .bun-bottom {
-      background: #d2691e;
-      height: 40px;
-      border-radius: 30% 30% 60% 60%;
-    }
-
-    .layer:hover {
-      transform: scale(1.05);
+    @keyframes drop {
+      to {
+        transform: translateX(-50%) scale(1);
+      }
     }
 
     p {
-      margin-top: 20px;
       font-size: 1.2em;
-      color: #4e342e;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-      animation: slideUp 2s ease-in-out;
+      color: #5e4036;
+      text-align: center;
+      margin-top: 30px;
+      max-width: 500px;
+      animation: fadeInText 2s ease-out 1.3s forwards;
+      opacity: 0;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-30px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes fadeInText {
+      to { opacity: 1; }
     }
 
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(50px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* 弹出说明卡片 */
+    .info-card {
+      position: absolute;
+      top: -80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff6eb;
+      border: 2px solid #ffcc99;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 0.95em;
+      color: #6b2e00;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display: none;
+      z-index: 10;
+      animation: popUp 0.3s ease forwards;
     }
 
-    @media (max-width: 500px) {
-      h1 { font-size: 2em; }
-      .burger { width: 180px; }
+    @keyframes popUp {
+      from { opacity: 0; transform: translateX(-50%) scale(0.8); }
+      to { opacity: 1; transform: translateX(-50%) scale(1); }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🍔 生动诱人的汉堡</h1>
-    <div class="burger">
-      <div class="layer bun-top"></div>
-      <div class="layer lettuce"></div>
-      <div class="layer tomato"></div>
-      <div class="layer cheese"></div>
-      <div class="layer patty"></div>
-      <div class="layer bun-bottom"></div>
-    </div>
-    <p>
-      金黄松软的面包，清脆爽口的生菜，酸甜多汁的番茄，浓郁醇厚的芝士，配上鲜嫩多汁的牛肉饼，每一口，都是对味蕾的完美犒赏！
-    </p>
+  <h1>🍔 超写实汉堡</h1>
+
+  <div class="burger-stack" onclick="biteSound.play()">
+    <img src="https://i.imgur.com/Lu3vsDn.png" alt="Bun Top" class="bun-top" onclick="showInfo(event, '金黄松软的面包顶部，略带芝麻香气')">
+    <img src="https://i.imgur.com/V0P9nKH.png" alt="Lettuce" class="lettuce" onclick="showInfo(event, '新鲜翠绿的生菜，脆爽可口')">
+    <img src="https://i.imgur.com/DPdLv4J.png" alt="Tomato" class="tomato" onclick="showInfo(event, '酸甜多汁的番茄片，增添层次')">
+    <img src="https://i.imgur.com/utE6gmB.png" alt="Cheese" class="cheese" onclick="showInfo(event, '浓郁香滑的切达芝士，完美融化')">
+    <img src="https://i.imgur.com/W3LtBL6.png" alt="Patty" class="patty" onclick="showInfo(event, '炙烤牛肉饼，外焦里嫩，肉汁四溢')">
+    <img src="https://i.imgur.com/j1xvOPy.png" alt="Bun Bottom" class="bun-bottom" onclick="showInfo(event, '柔软回弹的面包底托住一切美味')">
+    <div class="info-card" id="infoCard"></div>
   </div>
+
+  <p>点击汉堡层了解更多，还能听见咬一口的声音！这是一个可以吃的网页 😋</p>
+
+  <!-- 咬一口音效 -->
+  <audio id="biteSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_1f9ad1e4d4.mp3?filename=burger-bite-83145.mp3"></audio>
+
+  <script>
+    const infoCard = document.getElementById('infoCard');
+    const biteSound = document.getElementById('biteSound');
+
+    function showInfo(event, text) {
+      event.stopPropagation(); // 防止冒泡触发音效
+      const target = event.target;
+      infoCard.innerText = text;
+      infoCard.style.top = (target.offsetTop - 80) + 'px';
+      infoCard.style.display = 'block';
+
+      clearTimeout(window.cardTimer);
+      window.cardTimer = setTimeout(() => {
+        infoCard.style.display = 'none';
+      }, 2000);
+    }
+  </script>
 </body>
 </html>
