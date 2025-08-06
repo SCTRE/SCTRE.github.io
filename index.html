@@ -1,69 +1,191 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>视频播放器</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能媒体播放器</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      background-color: #f4f4f4;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    h1 {
-      font-size: 1.5rem;
-      margin-bottom: 20px;
+      font-family: 'Arial', sans-serif;
+      background-color: #f9f9f9;
       color: #222;
+      margin: 0;
+      padding: 20px;
       text-align: center;
+      transition: background-color 0.3s, color 0.3s;
     }
 
-    .player-container {
-      background-color: #fff;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      padding: 16px;
-      width: 100%;
-      max-width: 600px;
+    .container {
+      max-width: 90%;
+      margin: auto;
     }
 
-    video {
-      width: 100%;
+    video, audio, img {
+      max-width: 100%;
+      height: auto;
+      margin-top: 20px;
       border-radius: 12px;
-      outline: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
-    .note {
-      margin-top: 10px;
-      font-size: 0.9rem;
-      color: #888;
-      text-align: center;
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 15px;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      background-color: #007BFF;
+      color: white;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .night-mode {
+      background-color: #1a1a1a;
+      color: #eee;
+    }
+
+    .night-mode button {
+      background-color: #444;
+      color: #fff;
+    }
+
+    .skin-green {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .skin-green button {
+      background-color: #66bb6a;
+    }
+
+    .skin-red {
+      background-color: #ffebee;
+      color: #c62828;
+    }
+
+    .skin-red button {
+      background-color: #ef5350;
+    }
+
+    #loading {
+      font-size: 18px;
+      margin-top: 40px;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    #error-message {
+      color: red;
+      margin-top: 20px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h2>多媒体播放器</h2>
 
-  <h1>精彩视频，尽在此刻</h1>
+    <!-- 控制按钮 -->
+    <div>
+      <button onclick="toggleNightMode()">切换夜间模式</button>
+      <button onclick="changeSkin('default')">默认皮肤</button>
+      <button onclick="changeSkin('green')">绿色皮肤</button>
+      <button onclick="changeSkin('red')">红色皮肤</button>
+    </div>
 
-  <div class="player-container">
-    <video controls poster="https://dummyimage.com/600x340/cccccc/ffffff&text=Loading...">
-      <source src="media/video.mp4" type="video/mp4" />
-      您的浏览器不支持 video 标签。
-    </video>
-    <div class="note">点击播放，享受时光</div>
+    <!-- 加载动画 -->
+    <div id="loading">加载中...</div>
+
+    <!-- 媒体显示区域 -->
+    <div id="media-container"></div>
+
+    <!-- 错误提示 -->
+    <div id="error-message"></div>
   </div>
 
+  <script>
+    const container = document.getElementById("media-container");
+    const loading = document.getElementById("loading");
+    const errorMessage = document.getElementById("error-message");
+
+    // 夜间模式切换
+    function toggleNightMode() {
+      document.body.classList.toggle("night-mode");
+    }
+
+    // 切换皮肤
+    function changeSkin(skin) {
+      document.body.classList.remove("skin-green", "skin-red");
+      if (skin === 'green') document.body.classList.add("skin-green");
+      else if (skin === 'red') document.body.classList.add("skin-red");
+    }
+
+    // 自动加载媒体
+    window.onload = function () {
+      const tryLoad = [
+        { type: "video", src: "media/text.mp4" },
+        { type: "audio", src: "media/text.mp3" },
+        { type: "image", src: "media/text.png" }
+      ];
+
+      let loaded = false;
+
+      tryLoad.forEach(media => {
+        if (loaded) return;
+
+        if (media.type === "video") {
+          const video = document.createElement("video");
+          video.src = media.src;
+          video.controls = true;
+          video.onloadeddata = () => {
+            loading.style.display = "none";
+            container.appendChild(video);
+            loaded = true;
+          };
+          video.onerror = () => showError(media.src);
+          container.appendChild(video);
+        }
+
+        if (media.type === "audio") {
+          const audio = document.createElement("audio");
+          audio.src = media.src;
+          audio.controls = true;
+          audio.onloadeddata = () => {
+            loading.style.display = "none";
+            container.appendChild(audio);
+            loaded = true;
+          };
+          audio.onerror = () => showError(media.src);
+          container.appendChild(audio);
+        }
+
+        if (media.type === "image") {
+          const img = document.createElement("img");
+          img.src = media.src;
+          img.onload = () => {
+            loading.style.display = "none";
+            container.appendChild(img);
+            loaded = true;
+          };
+          img.onerror = () => showError(media.src);
+          container.appendChild(img);
+        }
+      });
+    }
+
+    function showError(src) {
+      errorMessage.innerText = `⚠ 无法加载媒体文件：${src}`;
+      loading.style.display = "none";
+    }
+  </script>
 </body>
 </html>
