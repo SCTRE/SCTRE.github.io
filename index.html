@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>美味汉堡</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #ffe8c2, #f4b183);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      text-align: center;
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    h1 {
+      font-size: 3em;
+      color: #8b4513;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px #fff3e0;
+    }
+
+    .burger {
+      position: relative;
+      display: inline-block;
+      width: 250px;
+      margin: 0 auto;
+    }
+
+    .layer {
+      width: 100%;
+      border-radius: 20px;
+      margin: 4px 0;
+      transition: transform 0.3s ease;
+    }
+
+    .bun-top {
+      background: #d2691e;
+      height: 50px;
+      border-radius: 60% 60% 30% 30%;
+      box-shadow: inset 0 3px #fff3e0;
+    }
+
+    .lettuce {
+      background: #7CFC00;
+      height: 20px;
+    }
+
+    .tomato {
+      background: #ff6347;
+      height: 18px;
+      border-radius: 10px;
+    }
+
+    .cheese {
+      background: #ffd700;
+      height: 12px;
+      transform: rotate(-2deg);
+    }
+
+    .patty {
+      background: #3e2723;
+      height: 25px;
+    }
+
+    .bun-bottom {
+      background: #d2691e;
+      height: 40px;
+      border-radius: 30% 30% 60% 60%;
+    }
+
+    .layer:hover {
+      transform: scale(1.05);
+    }
+
+    p {
+      margin-top: 20px;
+      font-size: 1.2em;
+      color: #4e342e;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      animation: slideUp 2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 500px) {
+      h1 { font-size: 2em; }
+      .burger { width: 180px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🍔 生动诱人的汉堡</h1>
+    <div class="burger">
+      <div class="layer bun-top"></div>
+      <div class="layer lettuce"></div>
+      <div class="layer tomato"></div>
+      <div class="layer cheese"></div>
+      <div class="layer patty"></div>
+      <div class="layer bun-bottom"></div>
+    </div>
+    <p>
+      金黄松软的面包，清脆爽口的生菜，酸甜多汁的番茄，浓郁醇厚的芝士，配上鲜嫩多汁的牛肉饼，每一口，都是对味蕾的完美犒赏！
+    </p>
+  </div>
+</body>
+</html>
