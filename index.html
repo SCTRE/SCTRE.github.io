@@ -5,187 +5,626 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>智能媒体播放器</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
     body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f9f9f9;
-      color: #222;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+      color: #212529;
       margin: 0;
       padding: 20px;
       text-align: center;
       transition: background-color 0.3s, color 0.3s;
+      min-height: 100vh;
+      position: relative;
     }
 
     .container {
-      max-width: 90%;
-      margin: auto;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
     }
 
-    video, audio, img {
-      max-width: 100%;
-      height: auto;
-      margin-top: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    header {
+      margin-bottom: 30px;
+      padding: 20px 0;
     }
 
-    button {
-      margin: 10px;
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      color: #1a73e8;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      color: #5f6368;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .media-section {
+      background-color: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      margin-bottom: 25px;
+      color: #1a73e8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .section-title i {
+      font-size: 1.8rem;
+    }
+
+    /* 媒体类型切换按钮 - 小型化并确保横向排列 */
+    .media-type-controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 25px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding: 5px 0;
+    }
+    
+    .media-type-btn {
       padding: 10px 20px;
-      font-size: 15px;
-      cursor: pointer;
+      background: #e9ecef;
       border: none;
-      border-radius: 8px;
-      background-color: #007BFF;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      min-width: 140px;
+      flex-shrink: 0;
+    }
+    
+    .media-type-btn:hover {
+      background: #dee2e6;
+      transform: translateY(-2px);
+    }
+    
+    .media-type-btn.active {
+      background: #1a73e8;
       color: white;
-      transition: background-color 0.3s;
+      box-shadow: 0 4px 10px rgba(26, 115, 232, 0.3);
+    }
+    
+    .media-type-btn i {
+      font-size: 1.2rem;
     }
 
-    button:hover {
-      background-color: #0056b3;
+    /* 当前媒体容器 - 扩大视频区域 */
+    #current-media-container {
+      min-height: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.05);
+      margin-top: 20px;
+      width: 100%;
+    }
+    
+    .media-content {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    .night-mode {
-      background-color: #1a1a1a;
-      color: #eee;
+    /* 视频自适应样式 */
+    .video-container {
+      position: relative;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
     }
 
-    .night-mode button {
-      background-color: #444;
-      color: #fff;
+    #videoPlayer {
+      width: 100%;
+      max-height: 70vh;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      background: #000;
+      object-fit: contain;
+    }
+    
+    audio {
+      width: 100%;
+      max-width: 700px;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      background: #f1f3f4;
     }
 
-    .skin-green {
-      background-color: #e8f5e9;
-      color: #2e7d32;
+    img {
+      max-height: 70vh;
+      max-width: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      background: #f1f3f4;
     }
 
-    .skin-green button {
-      background-color: #66bb6a;
+    #mode-toggle {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      z-index: 1000;
     }
 
-    .skin-red {
-      background-color: #ffebee;
-      color: #c62828;
-    }
-
-    .skin-red button {
-      background-color: #ef5350;
+    #mode-toggle:hover {
+      transform: scale(1.1);
+      background: #0d62da;
     }
 
     #loading {
       font-size: 18px;
-      margin-top: 40px;
+      margin: 40px 0;
       animation: blink 1s infinite;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
     }
 
+    .loader {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(26, 115, 232, 0.2);
+      border-top: 5px solid #1a73e8;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    #error-message {
+      color: #ea4335;
+      margin-top: 20px;
+      font-weight: 500;
+      padding: 15px;
+      background: #fce8e6;
+      border-radius: 8px;
+      max-width: 600px;
+      margin: 20px auto;
+      display: none;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 40px;
+    }
+
+    .feature-card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: transform 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .feature-card i {
+      font-size: 2.5rem;
+      color: #1a73e8;
+      margin-bottom: 15px;
+    }
+
+    .feature-card h3 {
+      margin-bottom: 10px;
+      color: #1a73e8;
+    }
+
+    footer {
+      margin-top: 40px;
+      padding: 20px;
+      color: #5f6368;
+      font-size: 0.9rem;
+    }
+
+    /* 夜间模式样式 */
+    .night-mode {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+
+    .night-mode .media-section,
+    .night-mode .feature-card {
+      background-color: #1e1e1e;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+
+    .night-mode .media-type-btn {
+      background: #2d2d2d;
+      color: #e0e0e0;
+    }
+    
+    .night-mode .media-type-btn:hover {
+      background: #3d3d3d;
+    }
+    
+    .night-mode .media-type-btn.active {
+      background: #8ab4f8;
+      color: #121212;
+    }
+
+    .night-mode #current-media-container {
+      background: #2d2d2d;
+    }
+
+    .night-mode .section-title,
+    .night-mode h1 {
+      color: #8ab4f8;
+    }
+
+    .night-mode .subtitle {
+      color: #b0b0b0;
+    }
+
+    .night-mode #mode-toggle {
+      background: #8ab4f8;
+      color: #121212;
+    }
+
+    .night-mode #mode-toggle:hover {
+      background: #aecbfa;
+    }
+
+    .night-mode #error-message {
+      background: #3c1e1e;
+      color: #f28b82;
+    }
+
+    .night-mode footer {
+      color: #9aa0a6;
+    }
+
+    @media (max-width: 768px) {
+      .media-type-controls {
+        justify-content: flex-start;
+        padding-bottom: 10px;
+      }
+      
+      .media-type-btn {
+        min-width: 130px;
+        padding: 8px 15px;
+        font-size: 0.95rem;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      #current-media-container {
+        min-height: 400px;
+      }
+      
+      .section-title {
+        font-size: 1.3rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .media-type-btn {
+        min-width: 120px;
+        padding: 7px 12px;
+        font-size: 0.9rem;
+        gap: 5px;
+      }
+      
+      .media-type-btn i {
+        font-size: 1.1rem;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      #current-media-container {
+        min-height: 350px;
+        padding: 15px;
+      }
+    }
+    
     @keyframes blink {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.5; }
     }
 
-    #error-message {
-      color: red;
-      margin-top: 20px;
-      font-weight: bold;
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>多媒体播放器</h2>
+    <header>
+      <h1>智能媒体播放器</h1>
+      <p class="subtitle">支持多种媒体格式，包括视频、音频和图片，提供流畅的播放体验</p>
+    </header>
 
-    <!-- 控制按钮 -->
-    <div>
-      <button onclick="toggleNightMode()">切换夜间模式</button>
-      <button onclick="changeSkin('default')">默认皮肤</button>
-      <button onclick="changeSkin('green')">绿色皮肤</button>
-      <button onclick="changeSkin('red')">红色皮肤</button>
-    </div>
+    <section class="media-section">
+      <h2 class="section-title">
+        <i>🎬</i>
+        媒体内容展示
+      </h2>
+      
+      <!-- 媒体类型切换按钮 - 小型化并确保横向排列 -->
+      <div class="media-type-controls">
+        <button class="media-type-btn active" data-type="video">
+          <i>🎥</i> 视频播放
+        </button>
+        <button class="media-type-btn" data-type="audio">
+          <i>🎵</i> 音频播放
+        </button>
+        <button class="media-type-btn" data-type="image">
+          <i>🖼️</i> 图片展示
+        </button>
+      </div>
+      
+      <!-- 加载动画 -->
+      <div id="loading">
+        <div class="loader"></div>
+        <div>正在加载媒体内容，请稍候...</div>
+      </div>
 
-    <!-- 加载动画 -->
-    <div id="loading">加载中...</div>
+      <!-- 当前媒体显示区域 - 扩大视频区域 -->
+      <div id="current-media-container">
+        <!-- 当前媒体内容将在这里动态加载 -->
+      </div>
 
-    <!-- 媒体显示区域 -->
-    <div id="media-container"></div>
+      <!-- 错误提示 -->
+      <div id="error-message"></div>
+    </section>
 
-    <!-- 错误提示 -->
-    <div id="error-message"></div>
+    <section class="features-section">
+      <h2 class="section-title">
+        <i>✨</i>
+        核心功能
+      </h2>
+      
+      <div class="features">
+        <div class="feature-card">
+          <i>🎥</i>
+          <h3>视频播放</h3>
+          <p>支持MP4、WebM等主流视频格式，提供清晰流畅的播放体验</p>
+        </div>
+        
+        <div class="feature-card">
+          <i>🎵</i>
+          <h3>音频播放</h3>
+          <p>支持MP3、WAV等音频格式，音质清晰，播放稳定</p>
+        </div>
+        
+        <div class="feature-card">
+          <i>🖼️</i>
+          <h3>图片展示</h3>
+          <p>支持JPG、PNG等图片格式，高清展示，加载快速</p>
+        </div>
+        
+        <div class="feature-card">
+          <i>🌓</i>
+          <h3>夜间模式</h3>
+          <p>智能切换日间/夜间模式，保护您的眼睛</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>©啊啵呲嘚</p>
+    </footer>
   </div>
 
+  <!-- 夜间模式切换按钮 -->
+  <button id="mode-toggle">🌙</button>
+
   <script>
-    const container = document.getElementById("media-container");
+    const currentMediaContainer = document.getElementById("current-media-container");
     const loading = document.getElementById("loading");
     const errorMessage = document.getElementById("error-message");
+    const modeToggle = document.getElementById("mode-toggle");
+    const mediaTypeButtons = document.querySelectorAll('.media-type-btn');
+    
+    // 媒体源定义
+    const mediaSources = {
+      video: {
+        title: "视频播放",
+        src: "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        desc: "高清视频演示 - Big Buck Bunny动画",
+        type: "video"
+      },
+      audio: {
+        title: "音频播放",
+        src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+        desc: "高品质音频演示 - SoundHelix示例曲目",
+        type: "audio"
+      },
+      image: {
+        title: "图片展示",
+        src: "https://images.unsplash.com/photo-1501854140801-50d01698950b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
+        desc: "自然风景摄影 - 山景与湖泊",
+        type: "image"
+      }
+    };
+    
+    // 当前显示的媒体类型
+    let currentMediaType = 'video';
 
     // 夜间模式切换
     function toggleNightMode() {
       document.body.classList.toggle("night-mode");
+      
+      // 更新按钮图标
+      if (document.body.classList.contains("night-mode")) {
+        modeToggle.textContent = "☀️";
+      } else {
+        modeToggle.textContent = "🌙";
+      }
     }
 
-    // 切换皮肤
-    function changeSkin(skin) {
-      document.body.classList.remove("skin-green", "skin-red");
-      if (skin === 'green') document.body.classList.add("skin-green");
-      else if (skin === 'red') document.body.classList.add("skin-red");
+    // 添加夜间模式按钮事件
+    modeToggle.addEventListener("click", toggleNightMode);
+    
+    // 加载并显示媒体
+    function loadMedia(type) {
+      // 清空当前媒体容器
+      currentMediaContainer.innerHTML = '';
+      errorMessage.style.display = 'none';
+      loading.style.display = 'flex';
+      
+      // 获取媒体信息
+      const media = mediaSources[type];
+      
+      // 创建媒体容器
+      const mediaCard = document.createElement("div");
+      mediaCard.className = "media-content";
+      
+      // 创建媒体标题
+      const title = document.createElement("h3");
+      title.textContent = media.title;
+      title.style.marginBottom = "15px";
+      title.style.color = "#1a73e8";
+      
+      // 创建媒体元素
+      let mediaElement;
+      
+      if (media.type === "video") {
+        // 为视频创建专用容器
+        const videoContainer = document.createElement("div");
+        videoContainer.className = "video-container";
+        
+        mediaElement = document.createElement("video");
+        mediaElement.id = "videoPlayer";
+        mediaElement.src = media.src;
+        mediaElement.controls = true;
+        
+        videoContainer.appendChild(mediaElement);
+        mediaCard.appendChild(title);
+        mediaCard.appendChild(videoContainer);
+      } else if (media.type === "audio") {
+        mediaElement = document.createElement("audio");
+        mediaElement.src = media.src;
+        mediaElement.controls = true;
+        mediaElement.style.width = "100%";
+        
+        mediaCard.appendChild(title);
+        mediaCard.appendChild(mediaElement);
+      } else {
+        mediaElement = document.createElement("img");
+        mediaElement.src = media.src;
+        mediaElement.alt = media.desc;
+        mediaElement.style.maxHeight = "60vh";
+        
+        mediaCard.appendChild(title);
+        mediaCard.appendChild(mediaElement);
+      }
+      
+      // 创建媒体描述
+      const desc = document.createElement("p");
+      desc.style.marginTop = "15px";
+      desc.style.color = "#5f6368";
+      desc.textContent = media.desc;
+      
+      // 添加描述
+      mediaCard.appendChild(desc);
+      
+      // 添加加载完成事件
+      if (media.type === "image") {
+        mediaElement.onload = () => {
+          loading.style.display = "none";
+          currentMediaContainer.appendChild(mediaCard);
+        };
+      } else {
+        mediaElement.onloadeddata = () => {
+          loading.style.display = "none";
+          currentMediaContainer.appendChild(mediaCard);
+        };
+      }
+      
+      // 添加错误处理
+      mediaElement.onerror = () => {
+        loading.style.display = "none";
+        errorMessage.textContent = `无法加载${media.title}，请检查媒体源`;
+        errorMessage.style.display = "block";
+      };
     }
-
-    // 自动加载媒体
-    window.onload = function () {
-      const tryLoad = [
-        { type: "video", src: "media/text.mp4" },
-        { type: "audio", src: "media/text.mp3" },
-        { type: "image", src: "media/text.png" }
-      ];
-
-      let loaded = false;
-
-      tryLoad.forEach(media => {
-        if (loaded) return;
-
-        if (media.type === "video") {
-          const video = document.createElement("video");
-          video.src = media.src;
-          video.controls = true;
-          video.onloadeddata = () => {
-            loading.style.display = "none";
-            container.appendChild(video);
-            loaded = true;
-          };
-          video.onerror = () => showError(media.src);
-          container.appendChild(video);
-        }
-
-        if (media.type === "audio") {
-          const audio = document.createElement("audio");
-          audio.src = media.src;
-          audio.controls = true;
-          audio.onloadeddata = () => {
-            loading.style.display = "none";
-            container.appendChild(audio);
-            loaded = true;
-          };
-          audio.onerror = () => showError(media.src);
-          container.appendChild(audio);
-        }
-
-        if (media.type === "image") {
-          const img = document.createElement("img");
-          img.src = media.src;
-          img.onload = () => {
-            loading.style.display = "none";
-            container.appendChild(img);
-            loaded = true;
-          };
-          img.onerror = () => showError(media.src);
-          container.appendChild(img);
+    
+    // 媒体类型切换功能
+    function switchMediaType(type) {
+      // 更新按钮状态
+      mediaTypeButtons.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.type === type) {
+          btn.classList.add('active');
         }
       });
+      
+      // 更新当前媒体类型
+      currentMediaType = type;
+      
+      // 加载新类型的媒体
+      loadMedia(type);
     }
+    
+    // 为媒体类型按钮添加事件监听
+    mediaTypeButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        switchMediaType(button.dataset.type);
+      });
+    });
 
-    function showError(src) {
-      errorMessage.innerText = `⚠ 无法加载媒体文件：${src}`;
-      loading.style.display = "none";
-    }
+    // 页面加载完成后执行
+    window.addEventListener("DOMContentLoaded", () => {
+      // 初始加载视频
+      loadMedia(currentMediaType);
+      
+      // 添加夜间模式切换功能
+      modeToggle.addEventListener("click", toggleNightMode);
+    });
   </script>
 </body>
 </html>
