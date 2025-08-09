@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>智能媒体播放器</title>
+  <title>智能媒体播放器 - 优化版</title>
   <style>
     * {
       margin: 0;
@@ -71,7 +71,7 @@
       font-size: 1.8rem;
     }
 
-    /* 媒体类型切换按钮 - 小型化并确保横向排列 */
+    /* 媒体类型切换按钮 - 优化为单行显示 */
     .media-type-controls {
       display: flex;
       justify-content: center;
@@ -116,7 +116,7 @@
 
     /* 当前媒体容器 - 扩大视频区域 */
     #current-media-container {
-      min-height: 500px;
+      min-height: 550px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -137,21 +137,26 @@
       align-items: center;
     }
 
-    /* 视频自适应样式 */
+    /* 视频自适应样式 - 优化尺寸 */
     .video-container {
       position: relative;
       width: 100%;
-      max-width: 1000px;
+      max-width: 100%;
       margin: 0 auto;
+      height: 0;
+      padding-bottom: 56.25%; /* 16:9 宽高比 */
     }
 
     #videoPlayer {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      max-height: 70vh;
+      height: 100%;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       background: #000;
-      object-fit: contain;
+      object-fit: cover;
     }
     
     audio {
@@ -339,11 +344,16 @@
       }
       
       #current-media-container {
-        min-height: 400px;
+        min-height: 450px;
       }
       
       .section-title {
         font-size: 1.3rem;
+      }
+      
+      /* 移动设备上视频使用全宽 */
+      .video-container {
+        padding-bottom: 75%; /* 4:3 比例更适合移动设备 */
       }
     }
     
@@ -364,7 +374,7 @@
       }
       
       #current-media-container {
-        min-height: 350px;
+        min-height: 400px;
         padding: 15px;
       }
     }
@@ -393,7 +403,7 @@
         媒体内容展示
       </h2>
       
-      <!-- 媒体类型切换按钮 - 小型化并确保横向排列 -->
+      <!-- 媒体类型切换按钮 - 优化为单行显示 -->
       <div class="media-type-controls">
         <button class="media-type-btn active" data-type="video">
           <i>🎥</i> 视频播放
@@ -455,7 +465,7 @@
     </section>
 
     <footer>
-      <p>©啊啵呲嘚</p>
+      <p>© 2023 智能媒体播放器 | 提供最佳的多媒体体验</p>
     </footer>
   </div>
 
@@ -469,24 +479,24 @@
     const modeToggle = document.getElementById("mode-toggle");
     const mediaTypeButtons = document.querySelectorAll('.media-type-btn');
     
-    // 媒体源定义
+    // 媒体源定义 - 已修改为指向media/目录下的资源
     const mediaSources = {
       video: {
         title: "视频播放",
-        src: "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        desc: "高清视频演示 - Big Buck Bunny动画",
+        src: "media/text.mp4", // 修改为您的仓库资源路径
+        desc: "高清视频演示 - 来自您的仓库",
         type: "video"
       },
       audio: {
         title: "音频播放",
-        src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-        desc: "高品质音频演示 - SoundHelix示例曲目",
+        src: "media/text.mp3", // 修改为您的仓库资源路径
+        desc: "高品质音频演示 - 来自您的仓库",
         type: "audio"
       },
       image: {
         title: "图片展示",
-        src: "media/text.png",
-        desc: "自然风景摄影 - 山景与湖泊",
+        src: "media/text.png", // 修改为您的仓库资源路径
+        desc: "图片展示 - 来自您的仓库",
         type: "image"
       }
     };
@@ -541,10 +551,20 @@
         mediaElement.id = "videoPlayer";
         mediaElement.src = media.src;
         mediaElement.controls = true;
+        mediaElement.playsInline = true;
         
         videoContainer.appendChild(mediaElement);
         mediaCard.appendChild(title);
         mediaCard.appendChild(videoContainer);
+        
+        // 添加自适应功能
+        mediaElement.addEventListener('loadedmetadata', function() {
+          const aspectRatio = mediaElement.videoWidth / mediaElement.videoHeight;
+          if (aspectRatio < 1) {
+            // 竖屏视频
+            videoContainer.style.paddingBottom = '125%';
+          }
+        });
       } else if (media.type === "audio") {
         mediaElement = document.createElement("audio");
         mediaElement.src = media.src;
